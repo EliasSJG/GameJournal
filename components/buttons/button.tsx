@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { theme } from "../../app/theme";
 
 type ButtonProps = {
   title: string;
@@ -20,14 +21,14 @@ export default function Button({ title, onPress }: ButtonProps) {
 const styles = StyleSheet.create({
   button: {
     padding: 13,
-    backgroundColor: "#462AB1",
+    backgroundColor: theme.color.purpleColor,
     borderRadius: 5,
-    width: "80%",
+    width: "90%",
     alignItems: "center",
     boxShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
   },
   text: {
-    color: "white",
+    color: theme.color.textPrimary,
     fontSize: 20,
   },
 });
