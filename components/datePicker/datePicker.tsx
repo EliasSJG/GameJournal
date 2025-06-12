@@ -9,13 +9,20 @@ import {
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { theme } from "../../app/theme";
 
-export default function DatePicker() {
+type DatePickerProps = {
+  onChangeDate?: (date: Date) => void;
+};
+
+export default function DatePicker({ onChangeDate }: DatePickerProps) {
   const [isPickerVisible, setPickerVisible] = useState(false);
   const [date, setDate] = useState<Date | null>(null);
 
   const handleConfirm = (selectedDate: Date) => {
     setDate(selectedDate);
     setPickerVisible(false);
+    if (onChangeDate) {
+      onChangeDate(selectedDate);
+    }
   };
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
