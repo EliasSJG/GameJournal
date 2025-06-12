@@ -4,17 +4,20 @@ import DropDownPicker from "react-native-dropdown-picker";
 import StatusSymbol from "../statusSymbols/statusSymbol";
 import { theme } from "../../app/theme";
 
+type Status = "playing" | "completed" | "platinum" | "notStarted";
+
 type StatusDropdownProps = {
   title: string;
-  onPress: () => void;
+  onChangeStatus?: (status: Status) => void;
 };
 
 export default function StatusDropdown({
   title,
-  onPress,
+  onChangeStatus,
 }: StatusDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
+  const [value, setValue] = useState<Status | null>(null);
+
   const [items, setItems] = useState([
     {
       label: "Playing",
@@ -48,6 +51,17 @@ export default function StatusDropdown({
         setValue={setValue}
         setItems={setItems}
         placeholder={title}
+        onChangeValue={(val) => {
+          if (
+            val &&
+            (val === "playing" ||
+              val === "completed" ||
+              val === "platinum" ||
+              val === "notStarted")
+          ) {
+            onChangeStatus?.(val);
+          }
+        }}
         style={styles.dropdown}
         textStyle={styles.dropDownText}
         dropDownContainerStyle={styles.dropdownContainer}

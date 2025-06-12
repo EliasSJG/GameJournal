@@ -4,16 +4,25 @@ import { theme } from "../../app/theme";
 type InputProps = {
   title: string;
   height?: number;
+  value: string;
+  onChangeText?: (text: string) => void;
 };
 
-export default function Input({ title, height }: InputProps) {
+export default function Input({
+  title,
+  height,
+  value,
+  onChangeText,
+}: InputProps) {
   const isMultiline = !!height && height > 100;
   return (
     <TextInput
       style={[styles.input, height ? { height } : null]}
-      placeholder="input..."
+      placeholder={title}
       placeholderTextColor="gray"
       multiline={isMultiline}
+      value={value}
+      onChangeText={onChangeText}
     />
   );
 }
