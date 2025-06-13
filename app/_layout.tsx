@@ -3,14 +3,25 @@ import React from "react";
 import { Tabs } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GameProvider } from "../context/gameContext";
+import { theme } from "./theme";
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <GameProvider>
         <Tabs
           screenOptions={{
-            headerShown: false,
-            tabBarActiveTintColor: "#6200EE",
+            headerShown: true,
+            tabBarActiveTintColor: theme.color.background,
+            headerTitle: "GameJournal",
+            headerTitleAlign: "center",
+            headerStyle: {
+              backgroundColor: theme.color.background,
+            },
+            headerTintColor: "#fff",
+            headerTitleStyle: {
+              fontSize: 30,
+              fontWeight: "bold",
+            },
           }}
         >
           <Tabs.Screen name="(tabs)/index" options={{ title: "Home" }} />
