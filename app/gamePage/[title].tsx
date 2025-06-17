@@ -17,12 +17,9 @@ import { Game } from "../../types/types";
 export default function GamePage() {
   const { title } = useLocalSearchParams<{ title: string }>();
   const { games } = useGames();
-  const [review, setReview] = useState("");
-  const [rating, setRating] = useState("");
-  const [platinumReview, setPlatinumReview] = useState("");
-  const [platinumRating, setPlatinumRating] = useState("");
 
   const game = games?.find((g: Game) => g.title === title);
+  //A useState for each of the input fields and to make it special for each game using key.
   const [gameReviews, setGameReviews] = useState<{
     [key: string]: {
       rating: string;
@@ -31,12 +28,12 @@ export default function GamePage() {
       platinumReview: string;
     };
   }>({});
-
+  //Sets up to write in the current game
   const currentReview = gameReviews[title]?.review ?? "";
   const currentRating = gameReviews[title]?.rating ?? "";
   const currentPlatReview = gameReviews[title]?.platinumReview ?? "";
   const currentPlatRating = gameReviews[title]?.platinumRating ?? "";
-
+  //Pushes the new review to the game and so each review is special to each game
   const newGameReview = (
     key: keyof (typeof gameReviews)[string],
     value: string
@@ -49,92 +46,71 @@ export default function GamePage() {
       },
     }));
   };
-  //Controlls so you cant write over 10 in rating
-  const handleRatingChange = (
-    text: string,
-    setter: React.Dispatch<React.SetStateAction<string>>
-  ) => {
-    const numeric = text.replace(/[^0-9]/g, "");
-    const number = numeric ? parseInt(numeric, 10) : 0;
-    setter(number > 10 ? "10" : numeric);
-  };
-
-  const handleRating = (text: string) => handleRatingChange(text, setRating);
-  const handlePlatRating = (text: string) =>
-    handleRatingChange(text, setPlatinumRating);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={styles.container}>
-          <View style={styles.gameContainer}>
-            <Text style={styles.text}>{title}</Text>
-            {game && (
-              <View style={styles.statusContainer}>
-                <StatusSymbol
-                  color={game.statusColor ?? theme.color.textPrimary}
+      <ScrollView style={styles.container}>
+        <View style={styles.gameContainer}>
+          <Text style={styles.text}>{title}</Text>
+          {game && (
+            <View style={styles.statusContainer}>
+              <StatusSymbol
+                color={game.statusColor ?? theme.color.textPrimary}
+              />
+            </View>
+          )}
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={styles.input}>
+            <Input
+              title="Write a Rating"
+              height={60}
+              value={currentRating}
+              onChangeText={(text) => {
+                const numeric = text.replace(/[^0-9]/g, "");
+                const number = numeric ? parseInt(numeric, 10) : 0;
+                newGameReview("rating", number > 10 ? "10" : numeric);
+              }}
+              keyboardType="numeric"
+            />
+          </View>
+          <View style={styles.input}>
+            <Input
+              title="Write a Review"
+              height={120}
+              value={currentReview}
+              onChangeText={(text) => newGameReview("review", text)}
+            />
+          </View>
+
+          {game?.status === "platinum" && (
+            <View style={styles.platinumContainer}>
+              <View style={styles.input}>
+                <Input
+                  title="Write a Platinum Rating"
+                  height={60}
+                  value={currentPlatRating}
+                  onChangeText={(text) => {
+                    const numeric = text.replace(/[^0-9]/g, "");
+                    const number = numeric ? parseInt(numeric, 10) : 0;
+                    newGameReview(
+                      "platinumRating",
+                      number > 10 ? "10" : numeric
+                    );
+                  }}
+                  keyboardType="numeric"
                 />
               </View>
-            )}
-          </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.input}>
-              <Input
-                title="Write a Rating"
-                height={60}
-                value={currentRating}
-                onChangeText={(text) => {
-                  const numeric = text.replace(/[^0-9]/g, "");
-                  const number = numeric ? parseInt(numeric, 10) : 0;
-                  newGameReview("rating", number > 10 ? "10" : numeric);
-                }}
-                keyboardType="numeric"
-              />
-            </View>
-            <View style={styles.input}>
-              <Input
-                title="Write a Review"
-                height={120}
-                value={currentReview}
-                onChangeText={(text) => newGameReview("review", text)}
-              />
-            </View>
-
-            {game?.status === "platinum" && (
-              <View style={styles.platinumContainer}>
-                <View style={styles.input}>
-                  <Input
-                    title="Write a Platinum Rating"
-                    height={60}
-                    value={currentPlatRating}
-                    onChangeText={(text) => {
-                      const numeric = text.replace(/[^0-9]/g, "");
-                      const number = numeric ? parseInt(numeric, 10) : 0;
-                      newGameReview(
-                        "platinumRating",
-                        number > 10 ? "10" : numeric
-                      );
-                    }}
-                    keyboardType="numeric"
-                  />
-                </View>
-                <View style={styles.input}>
-                  <Input
-                    title="Write a Platinum Review"
-                    height={120}
-                    value={currentPlatReview}
-                    onChangeText={(text) =>
-                      newGameReview("platinumReview", text)
-                    }
-                  />
-                </View>
+              <View style={styles.input}>
+                <Input
+                  title="Write a Platinum Review"
+                  height={120}
+                  value={currentPlatReview}
+                  onChangeText={(text) => newGameReview("platinumReview", text)}
+                />
               </View>
-            )}
-          </View>
+            </View>
+          )}
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>
