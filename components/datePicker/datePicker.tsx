@@ -10,17 +10,16 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { theme } from "../../app/theme";
 
 type DatePickerProps = {
+  value: Date;
   onChangeDate?: (date: Date) => void;
 };
 //The date picker component that comes from the library react-native-modal-datetime-picker
-export default function DatePicker({ onChangeDate }: DatePickerProps) {
+export default function DatePicker({ value, onChangeDate }: DatePickerProps) {
   //opens the modal
   const [isPickerVisible, setPickerVisible] = useState(false);
-  const [date, setDate] = useState<Date | null>(null);
 
   //selecs the date and closes the modal
   const handleConfirm = (selectedDate: Date) => {
-    setDate(selectedDate);
     setPickerVisible(false);
     if (onChangeDate) {
       onChangeDate(selectedDate);
@@ -37,7 +36,7 @@ export default function DatePicker({ onChangeDate }: DatePickerProps) {
         onPress={() => setPickerVisible(true)}
       >
         <Text style={styles.inputText}>
-          {date ? date.toLocaleDateString() : "Target Date"}
+          {value ? value.toLocaleDateString() : "Target Date"}
         </Text>
       </TouchableOpacity>
 
@@ -45,7 +44,7 @@ export default function DatePicker({ onChangeDate }: DatePickerProps) {
         isVisible={isPickerVisible}
         mode="date"
         display={Platform.OS === "ios" ? "spinner" : "calendar"}
-        date={date || new Date()}
+        date={value}
         onConfirm={handleConfirm}
         onCancel={() => setPickerVisible(false)}
         maximumDate={new Date(2027, 11, 31)}
