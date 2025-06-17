@@ -13,7 +13,7 @@ export default function addGame() {
   //uses usenavigation to be able to navigate back to the home page
   const navigation = useNavigation();
   const [title, setTitle] = useState("");
-
+  const { games } = useGames();
   // Certain status to the game
   const [status, setStatus] = useState<
     "playing" | "completed" | "platinum" | "notStarted" | null
@@ -42,7 +42,11 @@ export default function addGame() {
   //trims down unnecessary spaces and checks if the title and status are not empty
   const handleAddGame = () => {
     if (!title.trim() || !status) return;
-
+    //Controlls that if a game already exists then dont add the game
+    if (games.some((game) => game.title === title)) {
+      alert("this game already exists");
+      return;
+    }
     //adds the game with the title, date, status and statusColor
     addGame({
       title,
