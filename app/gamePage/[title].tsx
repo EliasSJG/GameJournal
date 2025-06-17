@@ -5,46 +5,41 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  TouchableOpacity,
+  Image,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Input from "../../components/input/input";
-import { useState } from "react";
 import { theme } from "../theme";
 import { useGames } from "../../context/gameContext";
 import StatusSymbol from "../../components/statusSymbols/statusSymbol";
-import { Game } from "../../types/types";
+import { Game, Review } from "../../types/types";
 
 export default function GamePage() {
+  //grabs the title from the url
   const { title } = useLocalSearchParams<{ title: string }>();
-  const { games } = useGames();
+  const router = useRouter();
+  const { games, reviews, updateReview } = useGames();
 
+  //finds the game based on the title
   const game = games?.find((g: Game) => g.title === title);
-  //A useState for each of the input fields and to make it special for each game using key.
-  const [gameReviews, setGameReviews] = useState<{
-    [key: string]: {
-      rating: string;
-      review: string;
-      platinumRating: string;
-      platinumReview: string;
-    };
-  }>({});
-  //Sets up to write in the current game
-  const currentReview = gameReviews[title]?.review ?? "";
-  const currentRating = gameReviews[title]?.rating ?? "";
-  const currentPlatReview = gameReviews[title]?.platinumReview ?? "";
-  const currentPlatRating = gameReviews[title]?.platinumRating ?? "";
-  //Pushes the new review to the game and so each review is special to each game
-  const newGameReview = (
-    key: keyof (typeof gameReviews)[string],
-    value: string
-  ) => {
-    setGameReviews((prev) => ({
-      ...prev,
-      [title]: {
-        ...prev[title],
-        [key]: value,
-      },
-    }));
+
+  //gives each game a id
+  const gameId = game?.id ?? "";
+
+  //Gets the review from the context
+  //broken
+  const currentReview = reviews[gameId]?.review ?? "";
+  const currentRating = reviews[gameId]?.rating ?? "";
+  const currentPlatReview = reviews[gameId]?.platinumReview ?? "";
+  const currentPlatRating = reviews[gameId]?.platinumRating ?? "";
+
+  //Pushes the new review to the game and so each review is special to each game with its new review
+  const newGameReview = (key: keyof Review, value: string) => {
+    updateReview(gameId, {
+      ...reviews[gameId],
+      [key]: value,
+    });
   };
 
   return (
@@ -57,6 +52,24 @@ export default function GamePage() {
               <StatusSymbol
                 color={game.statusColor ?? theme.color.textPrimary}
               />
+              <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() =>
+                  router.push({
+                    pathname: "/addGame",
+                    params: {
+                      title: game.title,
+                      status: game.status,
+                      date: game.date,
+                    },
+                  })
+                }
+              >
+                <Image
+                  source={require("../../assets/edit.png")}
+                  style={styles.iconImage}
+                />
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -158,5 +171,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 50,
     width: "100%",
+  },
+  iconContainer: { marginLeft: 40 },
+  iconImage: {
+    width: 40,
+    height: 40,
   },
 });

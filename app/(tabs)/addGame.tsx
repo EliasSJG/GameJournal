@@ -5,23 +5,83 @@ import { theme } from "../theme";
 import StatusDropdown from "../../components/dropdown/statusDropdown";
 import DatePicker from "../../components/datePicker/datePicker";
 import Input from "../../components/input/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useGames } from "../../context/gameContext";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 export default function addGame() {
+  const {
+    title: paramTitle,
+    status: paramStatus,
+    date: paramDate,
+  } = useLocalSearchParams<{
+    title?: string;
+    status?: string;
+    date?: string;
+  }>();
   //uses usenavigation to be able to navigate back to the home page
   const navigation = useNavigation();
   const [title, setTitle] = useState("");
-  const { games } = useGames();
+  const [rating, setRating] = useState<string | number>("");
+  const [reviewText, setReviewText] = useState("");
+  const [platRating, setPlatRating] = useState<string | number>("");
+  const [platReviewText, setPlatReviewText] = useState("");
+  const router = useRouter();
   // Certain status to the game
   const [status, setStatus] = useState<
     "playing" | "completed" | "platinum" | "notStarted" | null
-  >(null);
+  >(
+    //initial value based on the url from the game and if it matches it sets the value to that status
+    paramStatus === "playing" ||
+      paramStatus === "completed" ||
+      paramStatus === "platinum" ||
+      paramStatus === "notStarted"
+      ? paramStatus
+      : null
+  );
 
   const [date, setDate] = useState(new Date());
-  //gets the addgGame function from the context
-  const { addGame } = useGames();
+  //gets the addGame function from the context among with other things
+  const { games, addGame, updateGame, reviews } = useGames();
+
+  //checks if user is editing a game or adding one
+  const isEditing = paramTitle !== undefined;
+
+  useEffect(
+    () => {
+      //takes the value of the url off the game and puts it in the add game inputs
+      setTitle(paramTitle ?? "");
+      //takes the users game status and puts it in the game input
+      setStatus(
+        paramStatus === "playing" ||
+          paramStatus === "completed" ||
+          paramStatus === "platinum" ||
+          paramStatus === "notStarted"
+          ? paramStatus
+          : null
+      );
+      //takes the users date and puts it in the date input
+      setDate(paramDate ? new Date(paramDate) : new Date());
+      // Finds the game id based on the title
+      if (paramTitle) {
+        //broken
+        //if a game is found then populate the reviews with the existing data
+        const game = games.find((g) => g.title === paramTitle);
+        if (game) {
+          const gameReview = reviews[game.id];
+          if (gameReview) {
+            setRating(gameReview.rating ?? "");
+            setReviewText(gameReview.review ?? "");
+            setPlatRating(gameReview.platinumRating ?? "");
+            setPlatReviewText(gameReview.platinumReview ?? "");
+          }
+        }
+      }
+    },
+    //runs if any of these change
+    [paramTitle, paramStatus, paramDate, games, reviews]
+  );
 
   //depending on which status the game is the color will change
   const getColorStatus = () => {
@@ -42,21 +102,37 @@ export default function addGame() {
   //trims down unnecessary spaces and checks if the title and status are not empty
   const handleAddGame = () => {
     if (!title.trim() || !status) return;
-    //Controlls that if a game already exists then dont add the game
-    if (games.some((game) => game.title === title)) {
-      alert("this game already exists");
-      return;
-    }
-    //adds the game with the title, date, status and statusColor
-    addGame({
+    //adds the game with the title, date, status and statusColor with a uniqe id
+    const generateId = () => {
+      return (
+        Date.now().toString() + Math.floor(Math.random() * 1000).toString()
+      );
+    };
+    const gameData = {
+      id: generateId(),
       title,
       date: date.toLocaleDateString(),
       status,
       statusColor: getColorStatus(),
-    });
-    //after added it goes back to the home page
+    };
+
+    //Controlls that if a game already exists then dont add the game and checks if its editing
+    if (isEditing) {
+      updateGame(paramTitle!, gameData);
+    } else {
+      if (games.some((game) => game.title === title)) {
+        alert("This game already exists");
+        return;
+      }
+      addGame(gameData);
+    }
+
+    setTitle("");
+    setStatus(null);
+    setDate(new Date());
+
     navigation.goBack();
-  };
+  }; //after added it goes back to the home page
   return (
     <View style={styles.container}>
       <Input
@@ -66,11 +142,18 @@ export default function addGame() {
         onChangeText={setTitle}
       />
       <View style={styles.spacer} />
-      <StatusDropdown title="Select Status" onChangeStatus={setStatus} />
+      <StatusDropdown
+        title="Select Status"
+        onChangeStatus={setStatus}
+        value={status}
+      />
       <View style={styles.spacer} />
-      <DatePicker onChangeDate={setDate} />
+      <DatePicker onChangeDate={setDate} value={date} />
       <View style={styles.spacer} />
-      <Button title="Lägg till spel" onPress={handleAddGame} />
+      <Button
+        title={isEditing ? "Save Changes" : "Add Game"}
+        onPress={handleAddGame}
+      />
       <StatusBar style="auto" />
     </View>
   );
@@ -87,5 +170,3 @@ const styles = StyleSheet.create({
     height: 20,
   },
 });
-
-//Needs to add editing functionality

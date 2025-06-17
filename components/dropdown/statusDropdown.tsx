@@ -8,16 +8,17 @@ type Status = "playing" | "completed" | "platinum" | "notStarted";
 
 type StatusDropdownProps = {
   title: string;
+  value: Status | null;
   onChangeStatus?: (status: Status) => void;
 };
 
 //A status dropdown component coming from the library react-native-dropdown-picker
 export default function StatusDropdown({
   title,
+  value,
   onChangeStatus,
 }: StatusDropdownProps) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<Status | null>(null);
 
   //shows each of the status with their own color and text
   const [items, setItems] = useState([
@@ -50,21 +51,21 @@ export default function StatusDropdown({
         value={value}
         items={items}
         setOpen={setOpen}
-        setValue={setValue}
-        setItems={setItems}
-        placeholder={title}
-        //changes the value of the dropdown when a status is selected
-        onChangeValue={(val) => {
+        //changes the new selected value of the dropdown when a status is selected
+        setValue={(callback) => {
+          const newValue = callback(value);
           if (
-            val &&
-            (val === "playing" ||
-              val === "completed" ||
-              val === "platinum" ||
-              val === "notStarted")
+            newValue &&
+            (newValue === "playing" ||
+              newValue === "completed" ||
+              newValue === "platinum" ||
+              newValue === "notStarted")
           ) {
-            onChangeStatus?.(val);
+            onChangeStatus?.(newValue);
           }
         }}
+        setItems={setItems}
+        placeholder={title}
         style={styles.dropdown}
         textStyle={styles.dropDownText}
         dropDownContainerStyle={styles.dropdownContainer}
