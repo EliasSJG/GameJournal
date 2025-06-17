@@ -6,7 +6,7 @@ import XPBar from "../../components/xpBar/xpBar";
 
 export default function Statistics() {
   const { games } = useGames();
-
+  //A counter to seeing how many geames there are in each status
   const countStatus = (status: string) =>
     games.filter((game) => game.status === status).length;
   const playingCount = countStatus("playing");

@@ -14,7 +14,6 @@ type SearchInputProps = {
 };
 
 export default function SearchInput({
-  title,
   onSearchPress,
   onMenuPress,
 }: SearchInputProps) {

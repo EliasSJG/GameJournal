@@ -15,15 +15,20 @@ export const useGames = () => {
   return context;
 };
 export const GameProvider = ({ children }: { children: ReactNode }) => {
+  //holds the xp and games
   const [xp, setXp] = useState(0);
   const [games, setGames] = useState<Game[]>([]);
 
   const addGame = (game: Game) => {
+    //adds the games to the games to the games list
     setGames((prevGames) => [...prevGames, game]);
 
+    //shows the base xp
     let newXp = 0;
+    // depending on the status it gives you a certain amount of xp
     if (game.status === "completed") newXp = 100;
     if (game.status === "platinum") newXp = 500;
+    //updates the new previous xp with the new xp
     setXp((prevXp) => prevXp + newXp);
   };
 

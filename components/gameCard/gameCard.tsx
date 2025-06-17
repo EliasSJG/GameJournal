@@ -15,11 +15,14 @@ export default function GameCard({
   status,
   statusColor,
 }: GameCardProps) {
+  //uses useRouter to navigate to the gamePage of the game
   const router = useRouter();
+  //when card is clicked it goes to the corresponding game page
   const handlePress = () => {
     router.push(`/gamePage/${title}`);
   };
 
+  //Makes a diffrernce it the date field. if the game is playing or not started then it will say "Target Date:" And if the game is anything other than that it will say "Completed Date:"
   const dateLabel =
     status === "playing" || status === "notStarted"
       ? "Target Date: "

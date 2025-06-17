@@ -12,11 +12,13 @@ import { theme } from "../../app/theme";
 type DatePickerProps = {
   onChangeDate?: (date: Date) => void;
 };
-
+//The date picker component that comes from the library react-native-modal-datetime-picker
 export default function DatePicker({ onChangeDate }: DatePickerProps) {
+  //opens the modal
   const [isPickerVisible, setPickerVisible] = useState(false);
   const [date, setDate] = useState<Date | null>(null);
 
+  //selecs the date and closes the modal
   const handleConfirm = (selectedDate: Date) => {
     setDate(selectedDate);
     setPickerVisible(false);
@@ -24,6 +26,7 @@ export default function DatePicker({ onChangeDate }: DatePickerProps) {
       onChangeDate(selectedDate);
     }
   };
+  //Makes sures that it always starts on the current date in real life
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
 
