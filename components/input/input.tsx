@@ -14,6 +14,7 @@ export default function Input({
   value,
   onChangeText,
 }: InputProps) {
+  //Gives the oportunity for the height of the input to be changed
   const isMultiline = !!height && height > 100;
   return (
     <TextInput

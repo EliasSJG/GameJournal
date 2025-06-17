@@ -4,20 +4,26 @@ import { useGames } from "../../context/gameContext";
 import { theme } from "../../app/theme";
 
 export default function XPBar() {
+  //gets the xp fronm the context
   const { xp } = useGames();
-  const XP_PER_LEVEL = 1000;
-  const currentLevel = Math.floor(xp / XP_PER_LEVEL) + 1;
-  const currentXp = xp % XP_PER_LEVEL;
-  const xpProgress = currentXp / XP_PER_LEVEL;
+  //maximum XP per level
+  const maxLevelXP = 1000;
+  //when a xp has reached 1000 it increases the text level by 1
+  const currentLevel = Math.floor(xp / maxLevelXP) + 1;
+  //shows the current xp and the maximum xp
+  const currentXp = xp % maxLevelXP;
+  //Shos the new progresson of the xp bar with the new xp
+  const xpProgress = currentXp / maxLevelXP;
 
   return (
     <View style={styles.container}>
       <Text style={styles.levelText}>Level {currentLevel}</Text>
       <View style={styles.barBackground}>
+        {/* Visually changes the xp bar with the xp */}
         <View style={[styles.barFill, { width: `${xpProgress * 100}%` }]} />
       </View>
       <Text style={styles.xpText}>
-        {currentXp} / {XP_PER_LEVEL} XP
+        {currentXp} / {maxLevelXP} XP
       </Text>
     </View>
   );

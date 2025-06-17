@@ -6,20 +6,24 @@ import StatusDropdown from "../../components/dropdown/statusDropdown";
 import DatePicker from "../../components/datePicker/datePicker";
 import Input from "../../components/input/input";
 import { useState } from "react";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useGames } from "../../context/gameContext";
 
 export default function addGame() {
+  //uses usenavigation to be able to navigate back to the home page
   const navigation = useNavigation();
-  const route = useRoute<any>();
   const [title, setTitle] = useState("");
+
+  // Certain status to the game
   const [status, setStatus] = useState<
     "playing" | "completed" | "platinum" | "notStarted" | null
   >(null);
 
   const [date, setDate] = useState(new Date());
+  //gets the addgGame function from the context
   const { addGame } = useGames();
 
+  //depending on which status the game is the color will change
   const getColorStatus = () => {
     switch (status) {
       case "playing":
@@ -35,16 +39,18 @@ export default function addGame() {
     }
   };
 
+  //trims down unnecessary spaces and checks if the title and status are not empty
   const handleAddGame = () => {
     if (!title.trim() || !status) return;
 
+    //adds the game with the title, date, status and statusColor
     addGame({
       title,
       date: date.toLocaleDateString(),
       status,
       statusColor: getColorStatus(),
     });
-
+    //after added it goes back to the home page
     navigation.goBack();
   };
   return (
