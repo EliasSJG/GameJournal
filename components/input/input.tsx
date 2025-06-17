@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput } from "react-native";
+import { StyleSheet, TextInput, KeyboardTypeOptions } from "react-native";
 import { theme } from "../../app/theme";
 
 type InputProps = {
@@ -6,6 +6,7 @@ type InputProps = {
   height?: number;
   value: string;
   onChangeText?: (text: string) => void;
+  keyboardType?: KeyboardTypeOptions;
 };
 
 export default function Input({
@@ -13,6 +14,7 @@ export default function Input({
   height,
   value,
   onChangeText,
+  keyboardType,
 }: InputProps) {
   //Gives the oportunity for the height of the input to be changed
   const isMultiline = !!height && height > 100;
@@ -24,6 +26,7 @@ export default function Input({
       multiline={isMultiline}
       value={value}
       onChangeText={onChangeText}
+      keyboardType={keyboardType}
     />
   );
 }
