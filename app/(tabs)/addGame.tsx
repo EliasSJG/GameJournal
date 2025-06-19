@@ -48,40 +48,18 @@ export default function addGame() {
   //checks if user is editing a game or adding one
   const isEditing = paramTitle !== undefined;
 
-  useEffect(
-    () => {
-      //takes the value of the url off the game and puts it in the add game inputs
-      setTitle(paramTitle ?? "");
-      //takes the users game status and puts it in the game input
-      setStatus(
-        paramStatus === "playing" ||
-          paramStatus === "completed" ||
-          paramStatus === "platinum" ||
-          paramStatus === "notStarted"
-          ? paramStatus
-          : null
-      );
-      //takes the users date and puts it in the date input
-      setDate(paramDate ? new Date(paramDate) : new Date());
-      // Finds the game id based on the title
-      if (paramTitle) {
-        //broken
-        //if a game is found then populate the reviews with the existing data
-        const game = games.find((g) => g.title === paramTitle);
-        if (game) {
-          const gameReview = reviews[game.id];
-          if (gameReview) {
-            setRating(gameReview.rating ?? "");
-            setReviewText(gameReview.review ?? "");
-            setPlatRating(gameReview.platinumRating ?? "");
-            setPlatReviewText(gameReview.platinumReview ?? "");
-          }
-        }
-      }
-    },
-    //runs if any of these change
-    [paramTitle, paramStatus, paramDate, games, reviews]
-  );
+  useEffect(() => {
+    setTitle(paramTitle ?? "");
+    setStatus(
+      paramStatus === "playing" ||
+        paramStatus === "completed" ||
+        paramStatus === "platinum" ||
+        paramStatus === "notStarted"
+        ? paramStatus
+        : null
+    );
+    setDate(paramDate ? new Date(paramDate) : new Date());
+  }, [paramTitle, paramStatus, paramDate]);
 
   //depending on which status the game is the color will change
   const getColorStatus = () => {
